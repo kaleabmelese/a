@@ -75,64 +75,56 @@ const baseURL = 'https://api-et.hellocash.net'
 }*/
 
 const hellocash = {
-    login: (principal,credentials,system="lucy") => {
-         return new Promise((fullfill,failed)=>{
-             let body = {
-                 "principal": principal,
-                 "credentials": credentials,
-                 "system": system
-             }
-             axios.post(`${baseURL}/authenticate`,body).then((res)=>{
-                  fullfill(res.data.token);
-             },(err)=>{
-                   failed(err);
-             });
-         });
+    login: async (principal,credentials,system="lucy")=>{
+        let body = {
+            "principal": principal,
+            "credentials": credentials,
+            "system": system
+        }
+        return (await axios.post(`${baseURL}/authenticate`,body)).data.token;
     },
-    getInvoices: (param,token)=>{
-         return new Promise((fullfill,failed)=>{
-             let config = {
-                url: `${baseURL}/invoices`,
-                method: "get",
-                headers: {authorization:`Bearer ${token}`},
-                params: param
-             }
-             axios(config).then(res=>{
-                 fullfill(res);
-             },err=>{
-                 failed(err);
-             });
-         });
+    getInvoices: async (param,token)=>{
+        let config = {
+            url: `${baseURL}/invoices`,
+            method: "get",
+            headers: {authorization:`Bearer ${token}`},
+            params: param
+         }
+         return (await axios(config)).data;
     },
-    postInvoices: (invoice,token)=>{
-        return new Promise((fullfill,failed)=>{
-            let config = {
-                url: `${baseURL}/invoices`,
-                method: "post",
-                headers: {authorization:`Bearer ${token}`},
-                data: invoice
-            }
-            axios(config).then(res=>{
-                fullfill(res);
-            },err=>{
-                console.log(err.response);
-                failed(err);
-            });        
-        });
+    postInvoices: async (invoice,token)=>{
+        let config = {
+            url: `${baseURL}/invoices`,
+            method: "post",
+            headers: {authorization:`Bearer ${token}`},
+            data: invoice
+        }
+        return (await axios(config)).data; 
     },
-    validateInvoice: () =>{
-        
+    validateInvoice: async (invoice,token) =>{
+        let config = {
+            url: `${baseURL}/invoices/validate`,
+            method: "post",
+            headers: {authorization:`Bearer ${token}`},
+            data: invoice
+        }
+        return (await axios(config)).data; 
+    },
+    deleteInvoice: async (id,token)=>{
+        let config = {
+            url: `${baseURL}/invoices?id=${id}`,
+            method: "delete",
+            headers: {authorization:`Bearer ${token}`},
+        }  
+        return (await axios(config)).data;
     }
     
 }
 
 hellocash.login("1416563","lucy1234").then(res=>{
     console.log(res);
-
+  hellocash.getInvoices({offset:1,limit:1,id:PS7694GXT1N749ZJ0SY6EEJBE1J9EOBY},res).then(res=>{console.log(res)},err=>{console.log("s")})
+   //hellocash.deleteInvoice("PS7694GXT1N749ZJ0SY6EEJBE1J9EOBY",res).then(res=>{console.log(res)},err=>{console.log(err.response.data)})
 },err=>{
     console.log(err.data);
 });
-
-
-
-
