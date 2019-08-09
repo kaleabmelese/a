@@ -120,6 +120,9 @@ const hellocash = {
             });        
         });
     },
+    validateInvoice: () =>{
+        
+    }
     
 }
 
